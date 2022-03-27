@@ -1,4 +1,5 @@
 # client.py
+import decimal
 import socket
 import sys
 import os, os.path
@@ -20,15 +21,36 @@ params = {
     'convert': 'USD'
 }
 
+keyAPICambio = "2bb67f7ba83044608c6e1b3d220e013aefcf2ab0"
+
+parametersAPICambio = {"api_key": keyAPICambio,"from": "USD", "format": "json"}
+
 url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
 
+urlCambio = 'https://api.getgeoapi.com/v2/currency/convert'
+
 json = requests.get(url, params=params, headers=headers).json()
+jsonCambio = requests.get(urlCambio, parametersAPICambio).json()
 
 coins = json['data']
+coinsCambio = jsonCambio['rates']
+
+ars = ""
+eur = ""
+
+while True:
+    for cambio in coinsCambio:
+        if cambio == 'ARS':
+            ars = str(round(decimal.Decimal(coinsCambio['ARS']['rate']), 2))
+        if cambio == 'EUR':
+            eur = str(round(decimal.Decimal(coinsCambio['EUR']['rate']), 2))
+    break
+
+print(ars)
+print(eur)
 
 btc = ""
 eth = ""
-
 
 ssock_file = "./socket"
 csock_file = "./client_sock_py"
