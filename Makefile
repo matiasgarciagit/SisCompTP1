@@ -4,4 +4,4 @@ main: main.c
 	gcc $(CFLAGS) -o main main.c
 
 clean:
-	rm -f main socket srv *.o *.a *.so
+	rm -f main socket client_sock_py srv *.o *.a *.so

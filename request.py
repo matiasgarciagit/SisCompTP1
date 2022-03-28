@@ -1,5 +1,4 @@
-# client.py
-import socket
+import decimal
 import sys
 import os, os.path
 import time
@@ -20,14 +19,34 @@ params = {
     'convert': 'USD'
 }
 
+keyAPICambio = "2bb67f7ba83044608c6e1b3d220e013aefcf2ab0"
+
+parametersAPICambio = {"api_key": keyAPICambio,"from": "USD", "format": "json"}
+
 url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
 
+urlCambio = 'https://api.getgeoapi.com/v2/currency/convert'
+
 json = requests.get(url, params=params, headers=headers).json()
+jsonCambio = requests.get(urlCambio, parametersAPICambio).json()
 
-coins = json['data']
-
+ars = ""
+eur = ""
 btc = ""
 eth = ""
+
+coins = json['data']
+coinsCambio = jsonCambio['rates']
+
+while True:
+    for cambio in coinsCambio:
+        if cambio == 'ARS':
+            ars = str(round(decimal.Decimal(coinsCambio['ARS']['rate']), 2))
+        if cambio == 'EUR':
+            eur = str(round(decimal.Decimal(coinsCambio['EUR']['rate']), 2))
+    break
+
+
 
 
 ssock_file = "./socket"
@@ -50,14 +69,24 @@ while True:
 
 
 
+csock.sendto(str.encode(ars), ssock_file)
+csock.sendto(str.encode(eur), ssock_file)
 csock.sendto(str.encode(btc), ssock_file)
 csock.sendto(str.encode(eth), ssock_file)
+
+
 (bytes, address) = csock.recvfrom(100)
 msg = bytes.decode('utf-8')
-#print('address:',address,'received:',msg)
+print('address:',address,'received:',msg)
 (bytes, address) = csock.recvfrom(100)
 msg = bytes.decode('utf-8')
-#print('address:',address,'received:',msg)
+print('address:',address,'received:',msg)
+(bytes, address) = csock.recvfrom(100)
+msg = bytes.decode('utf-8')
+print('address:',address,'received:',msg)
+(bytes, address) = csock.recvfrom(100)
+msg = bytes.decode('utf-8')
+print('address:',address,'received:',msg)
 
 csock.close()
 

@@ -20,9 +20,12 @@ void *pythonExecute(){
 int main()
 {
     pthread_t hilo;
+    double dolarTopeso;
+    double dolarToeuro;
     double btc;
     double eth;
-    int flag =2;
+    char string[50];
+    int flag =4;
     pthread_create(&hilo, NULL, &pythonExecute, NULL);
     //pthread_join(hilo,NULL);
 
@@ -67,16 +70,33 @@ int main()
             return 4;
         }
 
-        //fprintf(stdout, "server received %ld bytes from %s\n", (long) numBytes, claddr.sun_path);
+        if(flag == 4){
+            dolarTopeso = atof(buf);
+            //printf("El valor de dolarTopeso: %lf\n",dolarTopeso);
+        }
 
-        if(flag == 2){
-            printf("Valor de buf: %s\n",buf);
-            btc = atof(buf);
+        if(flag == 3){
+            dolarToeuro = atof(buf);
+            //printf("El valor de dolarToeuro: %lf\n",dolarToeuro);
 
         }
+
+        if(flag == 2){
+
+            btc = atof(buf);
+            printf("BTC en pesos: %lf\n",btc*dolarTopeso);
+            sprintf(string,"%lf",btc*dolarTopeso);
+            j =(int) sendto(sfd, string, strlen(string), 0, (struct sockaddr*) &claddr, len);
+            printf("BTC en euro: %lf\n",btc*dolarToeuro);
+            printf("BTC en dolar: %lf\n",btc);
+        }
         if(flag == 1){
-            printf("Valor de buf: %s\n",buf);
             eth = atoi(buf);
+            printf("\n\n");
+            printf("ETH en pesos: %lf\n",eth*dolarTopeso);
+            printf("ETH en euro: %lf\n",eth*dolarToeuro);
+            printf("ETH en dolar: %lf\n",eth);
+
         }
 
         flag--;
@@ -93,8 +113,5 @@ int main()
             fprintf(stderr, strerror(errno), "error");
         }
     }
-
-    printf("El valor de BTC: %lf\n",btc);
-    printf("El valor de ETH: %lf\n",eth);
 
 }
